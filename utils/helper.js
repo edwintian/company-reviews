@@ -8,14 +8,14 @@ const getJWTSecret = () => {
   return secret;
 };
 
-const createJWTToken = username => {
+const createJWTToken = (username,userId) => {
   const today = new Date();
   const exp = new Date(today);
 
   const secret = getJWTSecret();
   exp.setDate(today.getDate() + 60); // adding days
 
-  const payload = { name: username, exp: parseInt(exp.getTime() / 1000) };
+  const payload = { name: username, id: userId, exp: parseInt(exp.getTime() / 1000) };
   const token = jwt.sign(payload, secret);
   return token;
 };
@@ -31,7 +31,7 @@ const requireJsonContent = (req, res, next) => {
 const protectRoute = (req, res, next) => {
   try {
     //no token check
-    if (!req.signedCookies.token) {
+    if (!req.cookies.token) {
       const err = new Error("You are not authorized");
       err.statusCode = 401;
       throw err;

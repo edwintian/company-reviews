@@ -30,7 +30,7 @@ const reviewsSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-});
+},{ _id : false });
 
 const companySchema = new mongoose.Schema({
   id: {
