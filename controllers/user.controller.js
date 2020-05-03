@@ -2,11 +2,11 @@ require("../utils/db");
 const User = require("../models/user.model");
 
 const findUser = (req, res, next) => {
-  User.findOne({ username: req.body.username })
+  User.findOne({ username: req.user.name })
     .select("-__v -_id -password")
     .then(data => res.json(data))
     .catch(err => next(err));
-}
+};
 
 const Joi = require("@hapi/joi");
 const userRegistrationSchema = Joi.object({
@@ -26,15 +26,23 @@ const validateAndCreateUser = (req, res, next) => {
     err.statusCode = 400;
     next(err);
   } else {
-    req.body.id = uuidv4();
+    req.body.userId = uuidv4();
     User.create(req.body)
-      .then(data => res.json(data))
+      .then(data => {
+        let output = {};
+        for (const key in data.toObject()) {
+          if (key != "_id" && key != "__v" && key != "password") {
+              output[key] = data[key];
+          }
+        }
+        res.status(201).json(output);
+      })
       .catch(err => next(err));
   }
 };
 
 const bcrypt = require("bcryptjs");
-const {createJWTToken} = require("../utils/helper");
+const { createJWTToken } = require("../utils/helper");
 const validateLoginAndCreateJWTCookie = async (req, res, next) => {
   try {
     const { username, password } = req.body;
@@ -55,7 +63,7 @@ const validateLoginAndCreateJWTCookie = async (req, res, next) => {
 
     res.cookie("token", token, {
       expires: expiryDate,
-      httpOnly: true, // client-side js cannot access cookie info
+      httpOnly: true // client-side js cannot access cookie info
       //secure: true, // use HTTPS
     });
 
@@ -69,8 +77,8 @@ const validateLoginAndCreateJWTCookie = async (req, res, next) => {
 };
 
 const clearCookieAndDisplayLogoutMsg = (req, res) => {
-    res.clearCookie("token").send("You are now logged out!");
-}
+  res.clearCookie("token").send("You are now logged out!");
+};
 
 module.exports = {
   findUser,

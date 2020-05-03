@@ -16,7 +16,4 @@ router.post("/login", requireJsonContent, validateLoginAndCreateJWTCookie);
 
 router.post("/logout", requireJsonContent, clearCookieAndDisplayLogoutMsg);
 
-const reviewsRouter = require("./reviews.route");
-router.use("/reviews", reviewsRouter);
-
 module.exports = router;
