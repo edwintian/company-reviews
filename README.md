@@ -1,4 +1,4 @@
-This is a simple backend express app to provide a Glassdoorsy experience.
+This is a simple express app to mimic a Glassdoor website backend.
 
 Users register(POST) a new account via the /users/register route, and are allowed to POST company reviews via the /companies/:id/reviews route.
 
